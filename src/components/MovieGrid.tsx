@@ -1,7 +1,7 @@
 import { Star } from "lucide-react"
 
 export function MovieGrid({
-  title,
+  //title,
   poster_path,
   vote_average,
 }: {

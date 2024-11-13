@@ -1,4 +1,3 @@
-import { Outlet } from "react-router-dom"
 import { CitySearch } from "./CitySearch"
 import { MovieSearch } from "./MovieSearch"
 import { Button } from "./ui/button"
@@ -17,7 +16,6 @@ export function NavBar() {
         </div>
       </header>
       <hr />
-      <Outlet />
     </>
   )
 }
