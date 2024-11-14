@@ -9,7 +9,7 @@ export async function getMovies() {
 
   try {
     const response = await fetch(
-      "https://api.themoviedb.org/3/movie/now_playing?language=en-US&page=1",
+      "https://api.themoviedb.org/3/movie/now_playing?language=en-US&page=1&region=IN",
       options
     )
     const data = await response.json()

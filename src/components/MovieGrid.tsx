@@ -18,8 +18,7 @@ export function MovieGrid({
       />
       <span className="bg-black text-white p-1 flex items-center font-medium gap-4 pl-4">
         <Star color="yellow" className="fill-yellow-400 inline" />{" "}
-        {vote_average.toFixed(1)}
-        /10
+        {vote_average < 1 ? "Not Rated Yet" : vote_average.toFixed(1) + " /10"}
       </span>
     </div>
   )

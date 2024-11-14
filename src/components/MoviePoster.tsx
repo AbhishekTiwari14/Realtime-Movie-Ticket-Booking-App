@@ -17,8 +17,6 @@ export function MoviePoster() {
   if (isLoading) return <p>Loading...</p>
   if (error) return <p>An error occurred: {error.message}</p>
 
-  console.log("data", data)
-
   return (
     <>
       <div className="relative">
@@ -51,7 +49,9 @@ export function MoviePoster() {
                     color="yellow"
                     className="fill-yellow-400 inline mr-2"
                   />{" "}
-                  {data.vote_average.toFixed(1)}/10 ({data.vote_count} votes)
+                  {data.vote_average < 1
+                    ? "Not Rated Yet"
+                    : data.vote_average.toFixed(1) + " /10"}
                 </span>
                 <span className="font-semibold">
                   <Clock className="inline mr-2" />
@@ -65,7 +65,7 @@ export function MoviePoster() {
                   .join("  |  ")}
               </p>
               <p className="text-xl mb-4">{formatDate(data.release_date)}</p>
-              <Link to="/">
+              <Link to={`/${movieId}/select-show`}>
                 <button className="bg-red-600 px-12 py-3 rounded-xl font-semibold text-xl text-center hover:bg-red-700">
                   Book Tickets{" "}
                 </button>
@@ -74,7 +74,7 @@ export function MoviePoster() {
           </div>
         </div>
       </div>
-      <div className="pt-16 px-16 w-3/5">
+      <div className="py-12 px-16 w-3/5">
         <p className="text-2xl font-bold mb-3">About the movie</p>
         <p className="text-md font-medium text-gray-800">{data.overview}</p>
       </div>

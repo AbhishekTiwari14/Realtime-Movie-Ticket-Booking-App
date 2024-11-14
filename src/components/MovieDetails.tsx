@@ -29,7 +29,7 @@ export function MovieDetails() {
           })}
         </div>
       </div>
-      <div className="mt-5">
+      <div className="mt-16">
         <p className="text-2xl font-bold mb-8">Crew</p>
         <div className="flex mx-auto w-full h-auto gap-10 rounded-lg">
           {data?.crew
