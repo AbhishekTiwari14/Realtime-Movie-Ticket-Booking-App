@@ -15,3 +15,10 @@ export type Crew = {
   profile_path: string
 }
 
+type UserLocationData = {
+  city: string;
+  loading: boolean;
+  error: string | null;
+  locateCity: () => void;
+};
+

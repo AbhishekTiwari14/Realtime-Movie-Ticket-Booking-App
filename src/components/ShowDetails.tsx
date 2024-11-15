@@ -49,14 +49,14 @@ export function ShowDetails() {
           <div
             key={d.date}
             className={`mt-4 flex flex-col py-1 px-4 rounded-lg gap-0 justify-center items-center ${
-              d.date == 14
+              d.date == 15
                 ? "bg-red-600 text-white"
                 : "hover:text-red-600 hover:cursor-pointer"
             }`}
           >
-            <p className="text-sm">{d.day}</p>
+            <p className="text-sm font-medium">{d.day}</p>
             <p className="text-md font-semibold">{d.date}</p>
-            <p className="text-sm">{d.month}</p>
+            <p className="text-sm font-medium">{d.month}</p>
           </div>
         ))}
       </div>

@@ -12,9 +12,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { Link } from "react-router-dom"
+
 
 export function NavBar() {
   const { currentUser, loginWithGoogle, logout } = useAuth()
+
 
   useEffect(() => {
     console.log("User profile photo URL:", currentUser?.photoURL)
@@ -24,7 +27,10 @@ export function NavBar() {
     <>
       <header>
         <div className="my-2 lg:mx-8 flex justify-between items-center max-w-full h-auto">
-          <img src="/logo.png" alt="logo" className="h-14" />
+          <Link to="/">
+            {" "}
+            <img src="/logo.png" alt="logo" className="h-14" />
+          </Link>
           <MovieSearch />
           <CitySearch />
           {currentUser?.photoURL ? (
