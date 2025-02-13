@@ -3,6 +3,7 @@ import { Movie } from "@/types"
 import { useQuery } from "@tanstack/react-query"
 import { MovieGrid } from "./MovieGrid"
 import { Link } from "react-router-dom"
+import { MovieDataGenerator } from "./MovieDataGenerator"
 
 export function MoviesList() {
   const { data, error, isLoading } = useQuery({
@@ -23,6 +24,7 @@ export function MoviesList() {
   // Access and display movies data here
   return (
     <div className="px-16 pt-12 bg-slate-50 mx-auto">
+      <MovieDataGenerator />
       <h1 className="text-2xl font-semibold mb-8">Now Playing Movies</h1>
       <div className="grid grid-cols-4">
         {/* Render your movies data here */}

@@ -2,7 +2,6 @@ import { useAuth } from "@/contexts/AuthContext"
 import { CitySearch } from "./CitySearch"
 import { MovieSearch } from "./MovieSearch"
 import { Button } from "./ui/button"
-import { useEffect } from "react"
 import { LogOut, ChevronDown, List } from "lucide-react"
 
 import {
@@ -13,15 +12,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Link } from "react-router-dom"
-
+import { querySeat } from "@/lib/querySeat"
+import { convertSeatIdToIndex } from "@/lib/convertSeatIdToIndex"
 
 export function NavBar() {
   const { currentUser, loginWithGoogle, logout } = useAuth()
-
-
-  useEffect(() => {
-    console.log("User profile photo URL:", currentUser?.photoURL)
-  }, [currentUser])
+  const index = convertSeatIdToIndex("D7")
+  querySeat("1013850_13Feb_T1_1000", index)
 
   return (
     <>

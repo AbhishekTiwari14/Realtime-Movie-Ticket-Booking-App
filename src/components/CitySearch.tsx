@@ -18,7 +18,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
-import { useLocation } from "../hooks/useLocation"
 
 const frameworks = [
   {
@@ -46,13 +45,9 @@ const frameworks = [
 export function CitySearch() {
   const [open, setOpen] = useState(false)
   const [value, setValue] = useState("")
-  const { userLocation } = useLocation()
-
-  if (userLocation) console.log("Lat:", userLocation.latitude)
 
   return (
     <>
-      <h1>Hi {userLocation && userLocation.latitude}</h1>
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
@@ -69,27 +64,10 @@ export function CitySearch() {
         </PopoverTrigger>
         <PopoverContent className="w-[200px] p-0">
           <Command>
-            <CommandInput placeholder="Search framework..." />
+            <CommandInput placeholder="Search City..." />
             <CommandList>
-              <CommandEmpty>No framework found.</CommandEmpty>
+              <CommandEmpty>No City found.</CommandEmpty>
               <CommandGroup>
-                {/* <CommandItem
-                value="Locate City"
-                onSelect={() => {
-                  locateCity()
-                  setValue(city)
-                  console.log("city: ", city)
-                  setOpen(false)
-                }}
-              >
-                {"Locate City"}
-                <Check
-                  className={cn(
-                    "ml-auto",
-                    value === city ? "opacity-100" : "opacity-0"
-                  )}
-                />
-              </CommandItem> */}
                 {frameworks.map((framework) => (
                   <CommandItem
                     key={framework.value}
@@ -98,7 +76,6 @@ export function CitySearch() {
                       setValue(currentValue === value ? "" : currentValue)
                       setOpen(false)
                     }}
-                    onClick={useLocation}
                   >
                     {framework.label}
                     <Check

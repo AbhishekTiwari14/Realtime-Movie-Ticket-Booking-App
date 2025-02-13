@@ -13,7 +13,7 @@ export async function getMovies() {
       options
     )
     const data = await response.json()
-    return data // Ensure data is returned here for useQuery
+    return data 
   } catch (error) {
     console.error("Error fetching movies:", error)
     throw error

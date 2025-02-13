@@ -1,5 +1,5 @@
-// src/context/AuthContext.tsx
-import React, {
+/* eslint-disable react-refresh/only-export-components */
+import {
   createContext,
   useContext,
   useEffect,
@@ -13,21 +13,15 @@ import {
   signOut,
 } from "firebase/auth"
 import { auth, googleProvider } from "../lib/firebase"
+import { AuthContextType } from "@/types"
 
-// Define the shape of the context data
-interface AuthContextType {
-  currentUser: User | null
-  loginWithGoogle: () => Promise<void>
-  logout: () => Promise<void>
-}
+
 
 // Create the AuthContext with a default value of null
 const AuthContext = createContext<AuthContextType | null>(null)
 
 // AuthProvider component to provide auth state to its children
-export const AuthProvider: React.FC<{ children: ReactNode }> = ({
-  children,
-}) => {
+export function AuthProvider({children} : { children: ReactNode }){
   const [currentUser, setCurrentUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
 
