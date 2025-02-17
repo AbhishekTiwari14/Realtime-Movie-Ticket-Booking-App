@@ -1,5 +1,5 @@
-import { SeatLayout } from "@/components/SeatLayout"
+import SeatSelection from "@/components/SeatSelection"
 
 export function SeatSelectionPage() {
-  return <SeatLayout />
+  return <SeatSelection />
 }

@@ -21,8 +21,10 @@ export type AuthContextType = {
   logout: () => Promise<void>
 }
 
+export type SeatStatus = "available" | "selected" | "booked"
+
 export type Seat = {
-  status: "availabe" | "selected" | "booked"
+  status: SeatStatus
   userId: string | null
   id: string
   row: string
@@ -37,16 +39,14 @@ export type SeatContextType = {
   ) => Promise<Seat[]>
 }
 
-// type UserLocationData = {
-//   city: string;
-//   loading: boolean;
-//   error: string | null;
-//   locateCity: () => void;
-// };
+export type MovieSchedule = {
+  seats: Seat[]
+  movieTitle: string
+  theaterName: string
+  showTime: string
+  date: string
+  month: string
+  day: string
+}
 
-//seat data
 
-// const seats - { A1: {status: "available", userId: null}, A2: {status: "available", userId: null}, A3: {status: "available", userId: null}, A4: {status: "available", userId: null}, A5: {status: "available", userId: null},
-// B1: {status: "available", userId: null}, B2: {status: "available", userId: null}, B3: {status: "available", userId: null}, B4: {status: "available", userId: null}, A1: {status: "available", userId: null}, B5: {status: "available", userId: null},
-// C1: {status: "available", userId: null}, C2: {status: "available", userId: null}, C3: {status: "available", userId: null}, C4: {status: "available", userId: null}, C5: {status: "available", userId: null},
-// D1: {status: "available", userId: null}, D2: {status: "available", userId: null}}

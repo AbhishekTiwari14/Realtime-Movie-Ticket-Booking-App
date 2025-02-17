@@ -2,6 +2,7 @@ import {
   collection,
   deleteDoc,
   doc,
+  getDoc,
   getDocs,
   query,
   setDoc,
@@ -47,7 +48,7 @@ async function getFirestoreMovieIds() {
   }
 }
 
-function generateTheatersData() {
+export function generateTheatersData() {
   return [
     {
       id: "T1",
@@ -78,7 +79,7 @@ function generateSeatsData() {
   rows.forEach((row) => {
     for (let i = 1; i <= 12; i++) {
       seats.push({
-        status: "availabe",
+        status: "available",
         userId: null,
         id: `${row}${i}`,
         row,
@@ -225,5 +226,34 @@ export async function generateMovieData() {
   } catch (error) {
     console.error("Error saving movie schedules:", error)
     throw error
+  }
+}
+
+export async function dailyTaskUpdates() {
+  const currentDate = new Date().toLocaleDateString()
+  const dailyUpdateRef = doc(db, "dailyTasks", "executionDate")
+
+  try {
+    const docSnap = await getDoc(dailyUpdateRef)
+    if (docSnap.exists()) {
+      const lastExecutionDate = docSnap.data().date
+
+      if (lastExecutionDate !== currentDate) {
+        console.log("Executing daily task...")
+
+        await generateMovieData()
+
+        await setDoc(dailyUpdateRef, { date: currentDate })
+      }
+    } else {
+      // If no date exists, it's the first run, so execute the task
+      console.log("First-time execution. Executing daily task...")
+      await generateMovieData()
+
+      // Save today's date to Firestore
+      await setDoc(dailyUpdateRef, { date: currentDate })
+    }
+  } catch (error) {
+    console.error("Error checking or updating daily task:", error)
   }
 }

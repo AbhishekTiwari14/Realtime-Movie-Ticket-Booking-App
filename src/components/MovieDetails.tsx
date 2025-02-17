@@ -15,7 +15,6 @@ export function MovieDetails() {
   if (isLoading) return <p>Loading...</p>
   if (error)
     return <p>An error occurred: {error.message} console.log("error", data)</p>
-  console.log("cast: ", data)
 
   const seenIds = new Set()
 

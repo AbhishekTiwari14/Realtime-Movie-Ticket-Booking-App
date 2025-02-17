@@ -25,7 +25,7 @@ export const router = createBrowserRouter([
     ],
   },
   {
-    path: "/:movieId/select-seat",
+    path: "booking/:docId",
     element: <SeatSelectionPage />,
   },
 ])

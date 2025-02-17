@@ -12,13 +12,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Link } from "react-router-dom"
-import { querySeat } from "@/lib/querySeat"
-import { convertSeatIdToIndex } from "@/lib/convertSeatIdToIndex"
+import { useEffect } from "react"
 
 export function NavBar() {
   const { currentUser, loginWithGoogle, logout } = useAuth()
-  const index = convertSeatIdToIndex("D7")
-  querySeat("1013850_13Feb_T1_1000", index)
+
+  useEffect(() => {
+    console.log("currentUser: ", currentUser)
+  }, [currentUser])
 
   return (
     <>
