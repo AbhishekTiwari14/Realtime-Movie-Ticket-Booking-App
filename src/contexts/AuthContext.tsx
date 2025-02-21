@@ -15,26 +15,31 @@ import {
 import { auth, googleProvider } from "../lib/firebase"
 import { AuthContextType } from "@/types"
 
-
-
 // Create the AuthContext with a default value of null
 const AuthContext = createContext<AuthContextType | null>(null)
 
 // AuthProvider component to provide auth state to its children
-export function AuthProvider({children} : { children: ReactNode }){
+export function AuthProvider({ children }: { children: ReactNode }) {
   const [currentUser, setCurrentUser] = useState<User | null>(null)
+  const [userPhotoUrl, setUserPhotoUrl] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
 
-  // Set up a listener for authentication state changes
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setCurrentUser(user)
+
+      if (user && user.photoURL) {
+        setUserPhotoUrl(user.photoURL)
+
+
+      } else {
+        setUserPhotoUrl(null)
+      }
       setLoading(false)
     })
-    return unsubscribe // Clean up the listener on unmount
+    return unsubscribe
   }, [])
 
-  // Google login function
   const loginWithGoogle = async () => {
     try {
       await signInWithPopup(auth, googleProvider)
@@ -43,7 +48,6 @@ export function AuthProvider({children} : { children: ReactNode }){
     }
   }
 
-  // Logout function
   const logout = async () => {
     try {
       await signOut(auth)
@@ -51,10 +55,9 @@ export function AuthProvider({children} : { children: ReactNode }){
       console.error("Logout Error:", error)
     }
   }
-
-  // Value provided by the AuthContext
   const value = {
     currentUser,
+    userPhotoUrl,
     loginWithGoogle,
     logout,
   }
@@ -66,7 +69,6 @@ export function AuthProvider({children} : { children: ReactNode }){
   )
 }
 
-// Custom hook to use AuthContext in other components
 export const useAuth = () => {
   const context = useContext(AuthContext)
   if (!context) {

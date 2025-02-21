@@ -1,5 +1,10 @@
 import { initializeApp, getApps, getApp } from "firebase/app"
-import { getAuth, GoogleAuthProvider } from "firebase/auth"
+import {
+  browserLocalPersistence,
+  getAuth,
+  GoogleAuthProvider,
+  setPersistence,
+} from "firebase/auth"
 import { getFirestore } from "firebase/firestore"
 
 interface FirebaseConfig {
@@ -21,10 +26,10 @@ const firebaseConfig: FirebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID as string,
 }
 
-// Initialize Firebase app if it hasn't been initialized already
 const firebaseApp = getApps().length ? getApp() : initializeApp(firebaseConfig)
 
-// Initialize Firebase services
 export const auth = getAuth(firebaseApp)
 export const db = getFirestore(firebaseApp)
 export const googleProvider = new GoogleAuthProvider()
+
+setPersistence(auth, browserLocalPersistence)

@@ -17,6 +17,7 @@ export type Crew = {
 
 export type AuthContextType = {
   currentUser: User | null
+  userPhotoUrl: string | null
   loginWithGoogle: () => Promise<void>
   logout: () => Promise<void>
 }
@@ -29,14 +30,7 @@ export type Seat = {
   id: string
   row: string
   number: number
-}
-
-export type SeatContextType = {
-  getAllSeats: (
-    movieId: string,
-    theaterId: string,
-    showtimeId: string
-  ) => Promise<Seat[]>
+  selectionTimestamp?: string
 }
 
 export type MovieSchedule = {
@@ -49,4 +43,13 @@ export type MovieSchedule = {
   day: string
 }
 
-
+export type Booking = {
+  amount: number
+  movieTitle: string
+  date: string
+  seats: string[]
+  showtime: string
+  theater: string
+  bookingId: string
+  paymentId: string
+}

@@ -12,16 +12,16 @@ export function ShowDetails() {
   const week = getWeekDetails()
   const currDate = week[0].date
   const [dateSelected, setDateSelected] = useState(currDate)
-  const { movieId } = useParams() // Get movieId from the URL
+  const { movieId } = useParams()
 
   const { data, error, isLoading } = useQuery({
-    queryKey: ["movieDetails", movieId], // Add movieId to queryKey
-    queryFn: () => getMovie(movieId), // Fetch details for the specific movie
-    enabled: !!movieId, // Ensure the query only runs when movieId is available
+    queryKey: ["movieDetails", movieId],
+    queryFn: () => getMovie(movieId),
+    enabled: !!movieId,
   })
 
   const handleShowtimeClick = (theaterId: string, showTime: string) => {
-    // Find the selected date's data from week array
+
     const selectedDateData = week.find((d) => d.date === dateSelected)
 
     // Generate the docId
@@ -31,7 +31,6 @@ export function ShowDetails() {
       ""
     )}`
 
-    // Navigate to booking page with docId
     navigate(`/booking/${docId}`)
   }
 
@@ -42,11 +41,11 @@ export function ShowDetails() {
 
   return (
     <>
-      <div className="grid grid-cols-3 mt-12 mr-auto ml-24 gap-4">
+      <div className="hidden md:grid grid-cols-3 mt-12 mr-auto ml-24 gap-16">
         <img
           src={`https://image.tmdb.org/t/p/w500${data.poster_path}`}
           alt={data.title}
-          className="w-48 md:w-64 rounded-lg shadow-lg mr-8"
+          className="w-64 rounded-lg shadow-lg mr-8"
         />
         <div className="flex flex-col gap-4 justify-center">
           <h1 className="text-4xl font-bold">{data.title}</h1>
@@ -61,11 +60,11 @@ export function ShowDetails() {
               </span>
             ))}
           </p>
-          <div className="text-balance">{data.overview}</div>
+          <div className="hidden lg:block text-balance">{data.overview}</div>
         </div>
       </div>
       <hr className="ml-12 mr-24 mt-8" />
-      <div className="flex flex-row gap-4 ml-16">
+      <div className="flex flex-row gap-4 ml-6 md:ml-12 lg:ml-16">
         {week.map((d) => (
           <div
             key={d.date}
@@ -84,15 +83,15 @@ export function ShowDetails() {
       </div>
       <hr className="ml-12 mr-24 mt-4 mb-12" />
       {theaterData.map((theater) => (
-        <>
-          <div key={theater.id} className="flex ml-12 mb-4 items-center">
+        <div key={theater.id}>
+          <div className="flex ml-12 mb-4 items-center">
             <p className="text-lg font-semibold">{theater.name} : </p>
             <div className="flex justify-evenly">
               {theater.showTimes.map((time) => (
                 <button
                   key={time}
                   onClick={() => handleShowtimeClick(theater.id, time)}
-                  className="justify-around p-2 mx-4 border-black border-2 rounded-lg text-green-700 hover:text-red-700 font-medium"
+                  className="justify-around p-1 lg:p-1 mx-4 border-black border-2 rounded-lg text-green-700 hover:text-red-700 text-sm md:text-base font-medium"
                 >
                   {time} {parseInt(time.split(":")[0], 10) >= 12 ? "pm" : "am"}
                 </button>
@@ -100,7 +99,7 @@ export function ShowDetails() {
             </div>
           </div>
           <hr className="ml-12 mr-24 mt-4 mb-8" />
-        </>
+        </div>
       ))}
     </>
   )

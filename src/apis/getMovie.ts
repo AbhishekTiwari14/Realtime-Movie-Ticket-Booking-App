@@ -3,7 +3,7 @@ export function getMovie(movieId: string | undefined) {
     method: "GET",
     headers: {
       accept: "application/json",
-      Authorization: `Bearer ${import.meta.env.VITE_TMDB_API_ACCESS_TOKEN}`, // Use your TMDB API Key here
+      Authorization: `Bearer ${import.meta.env.VITE_TMDB_API_ACCESS_TOKEN}`, 
     },
   }
 

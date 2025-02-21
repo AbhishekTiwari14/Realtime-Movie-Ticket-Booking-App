@@ -47,7 +47,7 @@ export function CitySearch() {
   const [value, setValue] = useState("")
 
   return (
-    <>
+    <div className="hidden lg:block">
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
@@ -91,6 +91,6 @@ export function CitySearch() {
           </Command>
         </PopoverContent>
       </Popover>
-    </>
+    </div>
   )
 }

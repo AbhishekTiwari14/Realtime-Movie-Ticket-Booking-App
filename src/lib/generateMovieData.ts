@@ -4,21 +4,18 @@ import {
   doc,
   getDoc,
   getDocs,
-  query,
   setDoc,
-  where,
 } from "firebase/firestore"
 import { getWeekDetails } from "./getWeekDetails"
 import { db } from "./firebase"
-import { Seat } from "@/types"
-import { format, subDays } from "date-fns"
+import { Movie, Seat } from "@/types"
 
 async function getMoviesData() {
   const response = await fetch(
     "https://api.themoviedb.org/3/movie/now_playing?language=en-US&page=1&region=IN"
   )
   const data = await response.json()
-  console.log("Asx", data.results)
+  console.log(data.results)
   return data.results
 }
 
@@ -90,44 +87,32 @@ function generateSeatsData() {
   return seats
 }
 
-async function deleteYesterdayMovieSchedules() {
+async function deleteUnlistedMovies(movies: Movie[]) {
   try {
-    // Get yesterday's date
-    const yesterday = subDays(new Date(), 1)
-    const yesterdayDate = format(yesterday, "d") // Gets day of month as 1-31
-    const yesterdayMonth = format(yesterday, "M") // Gets month as 1-12
-
-    // Reference to movieSchedules collection
+    const movieIdsArray = movies.map((movie) => movie.id.toString())
     const movieSchedulesRef = collection(db, "movieSchedules")
 
-    // Create a query to find all documents for yesterday
-    const q = query(
-      movieSchedulesRef,
-      where("date", "==", yesterdayDate),
-      where("month", "==", yesterdayMonth)
-    )
+    const querySnapshot = await getDocs(movieSchedulesRef)
 
-    // Get all matching documents
-    const querySnapshot = await getDocs(q)
-
-    // Keep track of deleted documents count
     let deletedCount = 0
 
-    // Delete each document
-    const deletePromises = querySnapshot.docs.map(async (doc) => {
-      await deleteDoc(doc.ref)
-      deletedCount++
-    })
+    const deletePromises = querySnapshot.docs
+      .filter((doc) => {
+        const documentName = doc.id
+        const movieId = documentName.split("_")[0]
+        return !movieIdsArray.includes(movieId)
+      })
+      .map(async (doc) => {
+        await deleteDoc(doc.ref)
+        deletedCount++
+      })
 
-    // Wait for all deletions to complete
     await Promise.all(deletePromises)
 
-    console.log(
-      `Successfully deleted ${deletedCount} movie schedules from yesterday`
-    )
+    console.log(`Successfully deleted ${deletedCount} movie schedules`)
     return deletedCount
   } catch (error) {
-    console.error("Error deleting yesterday's movie schedules:", error)
+    console.error("Error deleting movie schedules:", error)
     throw error
   }
 }
@@ -147,72 +132,57 @@ export async function generateMovieData() {
         }`
         for (const theater of theaters) {
           for (const showTime of theater.showTimes) {
-            // Create a unique document ID for each showtime
             const docId = `${movie.id}_${dateString}_${
               theater.id
             }_${showTime.replace(":", "")}`
 
-            // Create the document data
             const showTimeData = {
               movieId: movie.id,
               movieTitle: movie.title,
               posterPath: movie.poster_path,
-              // Date info
               date: weekDates[weekDates.length - 1].date,
               month: weekDates[weekDates.length - 1].month,
               day: weekDates[weekDates.length - 1].day,
-              // Theater info
               theaterId: theater.id,
               theaterName: theater.name,
               showTime: showTime,
-              // Seats
               seats: seats,
-              // Metadata
               totalSeats: seats?.length,
               availableSeats: seats?.length,
               createdAt: new Date().toISOString(),
               lastUpdated: new Date().toISOString(),
             }
 
-            // Save to Firestore
             await setDoc(doc(db, "movieSchedules", docId), showTimeData)
           }
         }
       } else {
         for (const dateInfo of weekDates) {
-          // Create a formatted date string for the document ID
           const dateString = `${dateInfo.date}${dateInfo.month}`
 
           for (const theater of theaters) {
             for (const showTime of theater.showTimes) {
-              // Create a unique document ID for each showtime
               const docId = `${movie.id}_${dateString}_${
                 theater.id
               }_${showTime.replace(":", "")}`
 
-              // Create the document data
               const showTimeData = {
                 movieId: movie.id,
                 movieTitle: movie.title,
                 posterPath: movie.poster_path,
-                // Date info
                 date: dateInfo.date,
                 month: dateInfo.month,
                 day: dateInfo.day,
-                // Theater info
                 theaterId: theater.id,
                 theaterName: theater.name,
                 showTime: showTime,
-                // Seats
                 seats: seats,
-                // Metadata
                 totalSeats: seats?.length,
                 availableSeats: seats?.length,
                 createdAt: new Date().toISOString(),
                 lastUpdated: new Date().toISOString(),
               }
 
-              // Save to Firestore
               await setDoc(doc(db, "movieSchedules", docId), showTimeData)
             }
           }
@@ -220,7 +190,7 @@ export async function generateMovieData() {
       }
     }
 
-    deleteYesterdayMovieSchedules()
+    deleteUnlistedMovies(movies)
 
     console.log("Successfully saved all movie schedules")
   } catch (error) {
@@ -246,11 +216,9 @@ export async function dailyTaskUpdates() {
         await setDoc(dailyUpdateRef, { date: currentDate })
       }
     } else {
-      // If no date exists, it's the first run, so execute the task
       console.log("First-time execution. Executing daily task...")
       await generateMovieData()
 
-      // Save today's date to Firestore
       await setDoc(dailyUpdateRef, { date: currentDate })
     }
   } catch (error) {

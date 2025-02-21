@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react"
-import { useParams } from "react-router-dom"
+import { useState, useEffect, Fragment } from "react"
+import { useNavigate, useParams } from "react-router-dom"
 import { doc, onSnapshot } from "firebase/firestore"
 import { Button } from "@/components/ui/button"
 import { ChevronLeft, Loader2, Pencil } from "lucide-react"
@@ -7,6 +7,11 @@ import { MovieSchedule, Seat, SeatStatus } from "@/types"
 import { db } from "@/lib/firebase"
 import { SetSeatCount } from "./SetSeatCount"
 import { convertSeatIdToIndex } from "@/lib/convertSeatIdToIndex"
+import { useQuery } from "@tanstack/react-query"
+import { getMovie } from "@/apis/getMovie"
+import { bookSeats } from "@/lib/bookSeats"
+import { startSeatReleaseTimeout } from "@/lib/startSeatReleaseTimeout"
+import toast from "react-hot-toast"
 
 const SeatSelection = () => {
   const { docId } = useParams()
@@ -80,6 +85,16 @@ const SeatSelection = () => {
     setSelectedSeatsCount(0)
     setPrice(0)
   }, [seatsCount])
+
+  const navigate = useNavigate()
+
+  const movieId = docId?.split("_")[0]
+
+  const { data } = useQuery({
+    queryKey: ["movieDetails", movieId],
+    queryFn: () => getMovie(movieId),
+    enabled: !!movieId,
+  })
 
   function updateSeatCount(val: number) {
     setSeatsCount(val)
@@ -164,8 +179,42 @@ const SeatSelection = () => {
       return "border-green-400 bg-green-600 text-white"
     } else if (status === "available")
       return "border-green-400 bg-white hover:bg-green-600 hover:text-white"
-    else if (status === "booked")
-      return "border-gray-400 bg-gray-400 text-white cursor-not-allowed"
+    else if (status === "booked" || status === "selected")
+      return "border-gray-400 bg-gray-400 text-white cursor-not-allowed pointer-events-none"
+    return "border-gray-400 bg-gray-400 text-white cursor-not-allowed pointer-events-none"
+  }
+
+  const date = docId?.split("_")[1]
+  const theater = docId?.split("_")[2]
+  const showtime = docId?.split("_")[3]
+
+  const handleProceedToPayment = async () => {
+    for (const seatId of selectedSeats) {
+      const index = convertSeatIdToIndex(seatId)
+      if (seats[index].status === "available") continue
+      else {
+        toast.error("Selected seats have already been booked")
+        setSelectedSeats([])
+        setSelectedSeatsCount(0)
+        return
+      }
+    }
+
+    await bookSeats(docId as string, selectedSeats, "selected")
+
+    startSeatReleaseTimeout(docId as string, selectedSeats)
+
+    const paymentData = {
+      amount: price,
+      movieTitle: data.title,
+      date,
+      theater,
+      seats: selectedSeats,
+      showtime,
+      docId,
+    }
+
+    navigate(`/booking/${docId}/payment`, { state: paymentData })
   }
 
   if (loading) {
@@ -180,7 +229,6 @@ const SeatSelection = () => {
     return <div className="p-4 text-red-500">{error}</div>
   }
 
-  // Group seats by row
   const seatsArray = Object.values(seats)
   const seatsByRow = seatsArray.reduce((acc, seat) => {
     if (!acc[seat.row]) {
@@ -190,14 +238,19 @@ const SeatSelection = () => {
     return acc
   }, {} as Record<string, Seat[]>)
 
-  // Sort rows alphabetically
   const sortedRows = Object.keys(seatsByRow).sort()
 
   return (
     <>
       <div className="flex justify-between items-center w-full mx-auto px-2 py-4 bg-gray-200 text-black bg-opacity-50">
         <div className="flex items-center">
-          <ChevronLeft className="ml-1 mr-3" />
+          <button
+            onClick={() => navigate(-1)}
+            className="flex items-center cursor-pointer hover:bg-gray-300 hover:bg-opacity-30 p-1 rounded-full"
+            aria-label="Go back"
+          >
+            <ChevronLeft className="ml-1 mr-3" />
+          </button>
           <div className="flex flex-col font-semibold text-sm">
             <p className="font-semibold text-lg">{movieDetails?.movieTitle}</p>
             <p>
@@ -233,21 +286,23 @@ const SeatSelection = () => {
         {sortedRows.map((row) => (
           <div key={row} className="flex items-center">
             {/* Row label */}
-            <div className="font-medium text-black text-center">{row}</div>
+            <div className="font-medium text-black text-center w-8 shrink-0">
+              {row}
+            </div>
 
             {/* Seats */}
-            <div className="flex justify-center items-center gap-4 flex-1">
+            <div className="flex justify-center items-center gap-4 flex-1 ml-2">
               {seatsByRow[row]
                 .sort((a, b) => a.number - b.number)
                 .map((seat) => (
-                  <>
+                  <Fragment key={seat.id}>
                     {(seat.number === 3 || seat.number === 11) && (
-                      <div className="w-8"></div>
+                      <div className="w-8 shrink-0"></div>
                     )}
                     <Button
                       key={seat.id}
                       onClick={() => handleSeatClick(seat.id)}
-                      className={`w-8 h-8 flex items-center justify-center rounded text-green-400 border-2 ${getSeatColor(
+                      className={`w-8 h-8 flex shrink-0 items-center justify-center rounded text-green-400 border-2 ${getSeatColor(
                         seat.status,
                         seat.id
                       )}`}
@@ -255,7 +310,7 @@ const SeatSelection = () => {
                     >
                       {seat.number}
                     </Button>
-                  </>
+                  </Fragment>
                 ))}
             </div>
           </div>
@@ -297,13 +352,16 @@ const SeatSelection = () => {
           </div>
         </div>
       </div>
-      {price > 0 && (
+      {price > 0 && !open && (
         <>
           <div className="h-16" />
           <div className="fixed z-50 bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg">
             <div className="max-w-4xl mx-auto px-4 py-3">
               <div className="flex items-center justify-center">
-                <button className="bg-red-500 hover:bg-red-600 text-white px-24 py-3 rounded-lg font-medium text-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
+                <button
+                  onClick={handleProceedToPayment}
+                  className="bg-red-500 hover:bg-red-600 text-white px-24 py-3 rounded-lg font-medium text-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                >
                   Pay Rs. {price}
                 </button>
               </div>

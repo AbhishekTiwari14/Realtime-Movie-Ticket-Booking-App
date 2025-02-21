@@ -30,14 +30,14 @@ export function SetSeatCount({
     <div className="flex flex-col px-12 justify-center items-center gap-4">
       <p className="text-lg font-medium">How Many Seats?</p>
       <img src={displayedVehicle} alt="Vehicle icon" className="w-32 h-32" />
-      <div className="flex gap-5">
+      <div className="grid grid-cols-5 lg:grid-cols-10 place-items-center gap-5">
         {Array.from({ length: 10 }, (_, i) => i + 1).map((val) => (
           <button
             key={val}
             onClick={() => updateSeatCount(val)}
             onMouseEnter={() => setHoverSeatCount(val)}
             onMouseLeave={() => setHoverSeatCount(null)}
-            className={`w-10 h-10 flex items-center justify-center rounded-full border border-gray-300 font-semibold text-lg 
+            className={`w-10 h-10 flex justify-center items-center rounded-full border border-gray-300 font-semibold text-lg text-center
               ${
                 seatCount === val
                   ? "bg-red-600 text-white"

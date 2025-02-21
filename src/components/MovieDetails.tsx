@@ -7,9 +7,9 @@ import { DisplayProfile } from "./DisplayProfile"
 export function MovieDetails() {
   const { movieId } = useParams()
   const { data, error, isLoading } = useQuery({
-    queryKey: ["movieCredits", movieId], // Add movieId to queryKey
-    queryFn: () => getCastAndCrew(movieId), // Fetch details for the specific movie
-    enabled: !!movieId, // Ensure the query only runs when movieId is available
+    queryKey: ["movieCredits", movieId],  
+    queryFn: () => getCastAndCrew(movieId),
+    enabled: !!movieId,
   })
 
   if (isLoading) return <p>Loading...</p>
@@ -19,10 +19,10 @@ export function MovieDetails() {
   const seenIds = new Set()
 
   return (
-    <div className="pt-8 px-16 max-w-full bg-slate-50">
+    <div className="pt-8 px-4 max-w-full bg-slate-50">
       <div className="mt-5">
         <p className="text-2xl font-bold mb-8">Cast</p>
-        <div className="flex mx-auto w-full h-auto gap-10 rounded-lg">
+        <div className="flex mx-auto w-full h-auto gap-10 rounded-lg flex-wrap">
           {data?.cast?.slice(0, 6).map((actor: Crew) => {
             return <DisplayProfile {...actor} />
           })}
@@ -30,7 +30,7 @@ export function MovieDetails() {
       </div>
       <div className="mt-16">
         <p className="text-2xl font-bold mb-8">Crew</p>
-        <div className="flex mx-auto w-full h-auto gap-10 rounded-lg">
+        <div className="flex mx-auto w-full h-auto gap-10 rounded-lg flex-wrap">
           {data?.crew
             ?.filter((person: Crew) => person.known_for_department !== "Acting")
             .filter((person: Crew) => {
