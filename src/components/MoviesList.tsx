@@ -10,6 +10,7 @@ export function MoviesList() {
   const { data, error, isLoading, refetch } = useQuery({
     queryKey: ["nowPlayingMovies"],
     queryFn: getMovies,
+    staleTime: 5 * 60 * 1000,
   })
 
   const MovieCard = ({ movie }: { movie: Movie }) => {

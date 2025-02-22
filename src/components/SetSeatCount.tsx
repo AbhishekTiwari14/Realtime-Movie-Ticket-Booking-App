@@ -27,7 +27,7 @@ export function SetSeatCount({
   const displayedVehicle = svgVehicle[hoverSeatCount ?? seatCount]
 
   return (
-    <div className="flex flex-col px-12 justify-center items-center gap-4">
+    <div className="flex flex-col px-4 lg:px-12 justify-center items-center gap-4">
       <p className="text-lg font-medium">How Many Seats?</p>
       <img src={displayedVehicle} alt="Vehicle icon" className="w-32 h-32" />
       <div className="grid grid-cols-5 lg:grid-cols-10 place-items-center gap-5">

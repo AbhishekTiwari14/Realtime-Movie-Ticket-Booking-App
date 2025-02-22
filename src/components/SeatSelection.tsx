@@ -57,8 +57,10 @@ const SeatSelection = () => {
             setSeats(seatsData)
             setLoading(false)
           } else {
-            setError("Schedule not found")
+            console.error(`Document ${docId} not found`)
+            setError(`Schedule not found`)
             setLoading(false)
+            return
           }
         },
         (error) => {
@@ -78,7 +80,8 @@ const SeatSelection = () => {
 
   useEffect(() => {
     if (selectedSeatsCount === seatsCount) setPrice(120 * seatsCount)
-  }, [selectedSeatsCount, seatsCount])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedSeatsCount])
 
   useEffect(() => {
     setSelectedSeats([])
@@ -94,6 +97,7 @@ const SeatSelection = () => {
     queryKey: ["movieDetails", movieId],
     queryFn: () => getMovie(movieId),
     enabled: !!movieId,
+    staleTime: 5 * 60 * 1000,
   })
 
   function updateSeatCount(val: number) {
@@ -242,7 +246,22 @@ const SeatSelection = () => {
 
   return (
     <>
-      <div className="flex justify-between items-center w-full mx-auto px-2 py-4 bg-gray-200 text-black bg-opacity-50">
+      {open && (
+        <div className="flex fixed inset-0 lg:hidden items-center justify-center z-50 bg-black bg-opacity-50">
+          <div className="bg-white p-12 rounded-md shadow-lg flex justify-center items-center">
+            <SetSeatCount
+              seatCount={seatsCount}
+              updateSeatCount={updateSeatCount}
+              setPopoverOpen={setPopoverOpen}
+            />
+          </div>
+        </div>
+      )}
+      <div
+        className={`${
+          open ? "hidden lg:flex" : "flex"
+        }  justify-between items-center w-full mx-auto px-2 py-4 bg-gray-200 text-black bg-opacity-50 `}
+      >
         <div className="flex items-center">
           <button
             onClick={() => navigate(-1)}
@@ -270,7 +289,7 @@ const SeatSelection = () => {
             <Pencil className="h-4 w-4" />
           </button>
           {open && (
-            <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+            <div className="hidden fixed inset-0 lg:flex items-center justify-center z-50 bg-black bg-opacity-50">
               <div className="bg-white p-12 rounded-md shadow-lg flex justify-center items-center">
                 <SetSeatCount
                   seatCount={seatsCount}
@@ -282,7 +301,9 @@ const SeatSelection = () => {
           )}
         </div>
       </div>
-      <div className="mx-auto p-12 shadow-lg bg-gray-100 bg-opacity-30 space-y-4">
+      <div
+        className={`mx-auto p-12 shadow-lg bg-gray-100 bg-opacity-30 space-y-4`}
+      >
         {sortedRows.map((row) => (
           <div key={row} className="flex items-center">
             {/* Row label */}

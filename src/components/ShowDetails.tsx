@@ -18,10 +18,10 @@ export function ShowDetails() {
     queryKey: ["movieDetails", movieId],
     queryFn: () => getMovie(movieId),
     enabled: !!movieId,
+    staleTime: 5 * 60 * 1000,
   })
 
   const handleShowtimeClick = (theaterId: string, showTime: string) => {
-
     const selectedDateData = week.find((d) => d.date === dateSelected)
 
     // Generate the docId
