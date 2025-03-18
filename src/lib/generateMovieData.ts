@@ -213,11 +213,20 @@ export async function generateMovieData() {
   }
 }
 
+let isRunning = false
+
 export async function dailyTaskUpdates() {
+  if (isRunning) {
+    console.log(
+      "Daily task update is already in progress. Skipping this execution."
+    )
+    return
+  }
   const currentDate = new Date().toLocaleDateString()
   const dailyUpdateRef = doc(db, "dailyTasks", "executionDate")
 
   try {
+    isRunning = true
     const docSnap = await getDoc(dailyUpdateRef)
     if (docSnap.exists()) {
       const lastExecutionDate = docSnap.data().date
@@ -237,5 +246,8 @@ export async function dailyTaskUpdates() {
     }
   } catch (error) {
     console.error("Error checking or updating daily task:", error)
+  } finally {
+    // Reset the flag when the function completes (either successfully or with an error)
+    isRunning = false
   }
 }
