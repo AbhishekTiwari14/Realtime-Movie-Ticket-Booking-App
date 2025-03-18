@@ -9,15 +9,7 @@ import {
 import { getWeekDetails } from "./getWeekDetails"
 import { db } from "./firebase"
 import { Movie, Seat } from "@/types"
-
-async function getMoviesData() {
-  const response = await fetch(
-    "https://api.themoviedb.org/3/movie/now_playing?language=en-US&page=1&region=IN"
-  )
-  const data = await response.json()
-  console.log(data.results)
-  return data.results
-}
+import { getMovies } from "@/apis/getMovies"
 
 async function getFirestoreMovieIds() {
   try {
@@ -119,7 +111,8 @@ async function deleteUnlistedMovies(movies: Movie[]) {
 
 export async function generateMovieData() {
   try {
-    const movies = await getMoviesData()
+    const movies = await getMovies()
+    console.log("getMovies: ", movies)
     const theaters = generateTheatersData()
     const weekDates = getWeekDetails()
     const seats = generateSeatsData()
