@@ -5,6 +5,7 @@ import {
   getDoc,
   getDocs,
   setDoc,
+  writeBatch,
 } from "firebase/firestore"
 import { getWeekDetails } from "./getWeekDetails"
 import { db } from "./firebase"
@@ -119,6 +120,10 @@ export async function generateMovieData() {
     const seats = generateSeatsData()
     const getMoviesId = await getFirestoreMovieIds()
 
+    let batch = writeBatch(db)
+    let operationCount = 0
+    const MAX_BATCH_SIZE = 500
+
     for (const movie of movies) {
       if (getMoviesId.includes(movie.id)) {
         const dateString = `${weekDates[weekDates.length - 1].date}${
@@ -147,7 +152,22 @@ export async function generateMovieData() {
               lastUpdated: new Date().toISOString(),
             }
 
-            await setDoc(doc(db, "movieSchedules", docId), showTimeData)
+            batch.set(doc(db, "movieSchedules", docId), showTimeData)
+            operationCount++
+
+            // If we reach the batch limit, commit and create a new batch
+            if (operationCount >= MAX_BATCH_SIZE) {
+              await batch.commit()
+              console.log(`Committed batch of ${operationCount} operations`)
+              operationCount = 0
+              // Create a new batch
+              batch = writeBatch(db)
+            }
+            // await setDoc(doc(db, "movieSchedules", docId), showTimeData)
+          }
+          if (operationCount > 0) {
+            await batch.commit()
+            console.log(`Committed final batch of ${operationCount} operations`)
           }
         }
       } else {
