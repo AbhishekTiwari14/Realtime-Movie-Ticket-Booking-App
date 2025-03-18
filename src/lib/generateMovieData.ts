@@ -111,7 +111,8 @@ async function deleteUnlistedMovies(movies: Movie[]) {
 
 export async function generateMovieData() {
   try {
-    const movies = await getMovies()
+    const moviesData = await getMovies()
+    const movies = moviesData.results
     console.log("getMovies: ", movies)
     const theaters = generateTheatersData()
     const weekDates = getWeekDetails()
