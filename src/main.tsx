@@ -7,6 +7,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
 import { AuthProvider } from "./contexts/AuthContext.tsx"
 import { Toaster } from "react-hot-toast"
+import { Analytics } from "@vercel/analytics/react"
 
 const queryClient = new QueryClient()
 
@@ -18,6 +19,7 @@ createRoot(document.getElementById("root")!).render(
       <Toaster position="top-center" reverseOrder={false} />
     </AuthProvider>
     <ReactQueryDevtools />
+    <Analytics />
   </QueryClientProvider>
   //</StrictMode>
 )
