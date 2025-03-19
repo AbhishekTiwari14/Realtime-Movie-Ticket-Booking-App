@@ -8,6 +8,7 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
 import { AuthProvider } from "./contexts/AuthContext.tsx"
 import { Toaster } from "react-hot-toast"
 import { Analytics } from "@vercel/analytics/react"
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 const queryClient = new QueryClient()
 
@@ -20,6 +21,7 @@ createRoot(document.getElementById("root")!).render(
     </AuthProvider>
     <ReactQueryDevtools />
     <Analytics />
+    <SpeedInsights />
   </QueryClientProvider>
   //</StrictMode>
 )

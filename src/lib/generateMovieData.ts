@@ -18,7 +18,7 @@ const CACHE_DURATION = 5 * 60 * 1000 // 5 minutes
 
 // Throttling configuration
 const BATCH_SIZE = 100 // Firestore batch limit is 500
-const OPERATION_DELAY = 1000 // 1 second delay between batches
+const OPERATION_DELAY = 3000 // 1 second delay between batches
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
