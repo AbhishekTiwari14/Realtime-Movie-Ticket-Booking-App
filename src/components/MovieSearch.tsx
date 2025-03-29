@@ -1,10 +1,11 @@
 import { getMovies } from "@/apis/getMovies"
 import { Movie } from "@/types"
 import { useQuery } from "@tanstack/react-query"
+import { Loader2 } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 
-export function MovieSearch() {
+export default function MovieSearch() {
   const [searchQuery, setSearchQuery] = useState("")
   const [filteredMovies, setFilteredMovies] = useState<Movie[]>([])
   const [showRecommendations, setShowRecommendations] = useState(false)
@@ -100,7 +101,7 @@ export function MovieSearch() {
     navigate(`/${movie.id}`)
   }
 
-  if (isLoading) return <p>Loading...</p>
+  if (isLoading) return <Loader2 />
 
   if (error) {
     return (

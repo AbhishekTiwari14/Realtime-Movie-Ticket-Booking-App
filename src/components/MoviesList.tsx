@@ -6,7 +6,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 
-export function MoviesList() {
+export default function MoviesList() {
   const { data, error, isLoading, refetch } = useQuery({
     queryKey: ["nowPlayingMovies"],
     queryFn: getMovies,

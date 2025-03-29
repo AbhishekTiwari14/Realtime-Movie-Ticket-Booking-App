@@ -1,15 +1,14 @@
 import { Crew } from "@/types"
 
-export function DisplayProfile({
+export default function DisplayProfile({
   name,
-  id,
   profile_path,
   character,
   department,
 }: Crew) {
   return (
     <div className="flex flex-col shadow-2xl rounded-lg w-[138px] h-[250px]">
-      <div className="overflow-hidden rounded-t-xl w-full" key={id}>
+      <div className="overflow-hidden rounded-t-xl w-full">
         {profile_path ? (
           <img
             src={`https://image.tmdb.org/t/p/w185${profile_path}`}

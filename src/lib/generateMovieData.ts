@@ -182,7 +182,8 @@ export async function generateMovieData() {
     const moviesData = await getMovies()
     const movies = moviesData.results
     const theaters = generateTheatersData()
-    const weekDates = getWeekDetails()
+    const week = getWeekDetails()
+    const weekDates = week.slice(0, 2)
     const seats = generateSeatsData()
     const getMoviesId = await getFirestoreMovieIds()
 
@@ -300,4 +301,3 @@ export async function dailyTaskUpdates() {
     }
   }, DEBOUNCE_DELAY)
 }
-

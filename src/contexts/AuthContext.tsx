@@ -14,6 +14,7 @@ import {
 } from "firebase/auth"
 import { auth, googleProvider } from "../lib/firebase"
 import { AuthContextType } from "@/types"
+import { Loader2 } from "lucide-react"
 
 // Create the AuthContext with a default value of null
 const AuthContext = createContext<AuthContextType | null>(null)
@@ -30,8 +31,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (user && user.photoURL) {
         setUserPhotoUrl(user.photoURL)
-
-
       } else {
         setUserPhotoUrl(null)
       }
@@ -64,7 +63,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   return (
     <AuthContext.Provider value={value}>
-      {!loading && children}
+      {loading ? <Loader2 /> : children}
     </AuthContext.Provider>
   )
 }

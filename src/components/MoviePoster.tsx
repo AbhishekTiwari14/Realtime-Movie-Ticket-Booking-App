@@ -5,7 +5,7 @@ import { Star, Clock } from "lucide-react"
 import { formatTime } from "@/lib/format_time"
 import { formatDate } from "@/lib/format_date"
 
-export function MoviePoster() {
+export default function MoviePoster() {
   const { movieId } = useParams()
 
   const { data, error, isLoading } = useQuery({

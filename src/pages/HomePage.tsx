@@ -1,4 +1,4 @@
-import { MoviesList } from "@/components/MoviesList"
+import MoviesList from "@/components/MoviesList"
 import { dailyTaskUpdates } from "@/lib/generateMovieData"
 import { useEffect } from "react"
 

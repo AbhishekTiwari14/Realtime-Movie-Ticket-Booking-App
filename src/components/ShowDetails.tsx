@@ -1,13 +1,13 @@
 import { getMovie } from "@/apis/getMovie"
 import { formatTime } from "@/lib/format_time"
 import { useQuery } from "@tanstack/react-query"
-import { Clock } from "lucide-react"
+import { Clock, Loader2 } from "lucide-react"
 import { useNavigate, useParams } from "react-router-dom"
 import { getWeekDetails } from "../lib/getWeekDetails"
 import { useState } from "react"
 import { generateTheatersData } from "@/lib/generateMovieData"
 
-export function ShowDetails() {
+export default function ShowDetails() {
   const navigate = useNavigate()
   const week = getWeekDetails()
   const currDate = week[0].date
@@ -34,7 +34,7 @@ export function ShowDetails() {
     navigate(`/booking/${docId}`)
   }
 
-  if (isLoading) return <p>Loading...</p>
+  if (isLoading) return <Loader2 />
   if (error) return <p>An error occurred: {error.message}</p>
 
   const theaterData = generateTheatersData()
@@ -65,15 +65,19 @@ export function ShowDetails() {
       </div>
       <hr className="ml-12 mr-24 mt-8" />
       <div className="flex flex-row gap-4 ml-6 md:ml-12 lg:ml-16">
-        {week.map((d) => (
+        {week.map((d, index) => (
           <div
             key={d.date}
-            className={`mt-4 flex flex-col py-1 px-4 rounded-lg gap-0 justify-center items-center ${
-              d.date === dateSelected
-                ? "bg-red-600 text-white"
-                : "hover:text-red-600 hover:cursor-pointer"
-            }`}
-            onClick={() => setDateSelected(d.date)}
+            className={`mt-4 flex flex-col py-1 px-4 rounded-lg gap-0 justify-center items-center 
+              ${d.date === dateSelected ? "bg-red-600 text-white" : ""}
+              ${
+                index >= 3
+                  ? "bg-gray-300 opacity-25 disabled"
+                  : "hover:text-red-600 hover:cursor-pointer"
+              }`}
+            onClick={() => {
+              if (index < 3) setDateSelected(d.date)
+            }}
           >
             <p className="text-sm font-medium">{d.day}</p>
             <p className="text-md font-semibold">{d.date}</p>

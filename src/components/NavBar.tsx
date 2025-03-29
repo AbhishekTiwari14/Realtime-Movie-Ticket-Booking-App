@@ -1,8 +1,7 @@
 import { useAuth } from "@/contexts/AuthContext"
-import { CitySearch } from "./CitySearch"
-import { MovieSearch } from "./MovieSearch"
+import CitySearch from "./CitySearch"
 import { Button } from "./ui/button"
-import { LogOut, ChevronDown, List } from "lucide-react"
+import { LogOut, ChevronDown, List, Loader2 } from "lucide-react"
 
 import {
   DropdownMenu,
@@ -12,14 +11,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Link } from "react-router-dom"
-import { useEffect } from "react"
+import React, { Suspense } from "react"
 
-export function NavBar() {
+export default function NavBar() {
   const { currentUser, userPhotoUrl, loginWithGoogle, logout } = useAuth()
 
-  useEffect(() => {
-    console.log("currentUser: ", currentUser)
-  }, [currentUser])
+  const MovieSearch = React.lazy(() => import("./MovieSearch"))
 
   return (
     <>
@@ -28,7 +25,9 @@ export function NavBar() {
           <Link to="/">
             <img src="/logo.png" alt="logo" className="h-10 md:h-14" />
           </Link>
-          <MovieSearch />
+          <Suspense fallback={<Loader2 />}>
+            <MovieSearch />
+          </Suspense>
           <CitySearch />
           {userPhotoUrl ? (
             <div className="flex items-center">

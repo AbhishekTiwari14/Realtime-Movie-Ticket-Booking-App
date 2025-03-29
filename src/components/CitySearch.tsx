@@ -42,7 +42,7 @@ const frameworks = [
   },
 ]
 
-export function CitySearch() {
+export default function CitySearch() {
   const [open, setOpen] = useState(false)
   const [value, setValue] = useState("")
 

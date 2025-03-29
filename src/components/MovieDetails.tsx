@@ -2,20 +2,23 @@ import { getCastAndCrew } from "@/apis/getCastAndCrew"
 import { Crew } from "@/types"
 import { useQuery } from "@tanstack/react-query"
 import { useParams } from "react-router-dom"
-import { DisplayProfile } from "./DisplayProfile"
+import DisplayProfile from "./DisplayProfile"
+import { Loader2 } from "lucide-react"
 
-export function MovieDetails() {
+export default function MovieDetails() {
   const { movieId } = useParams()
   const { data, error, isLoading } = useQuery({
-    queryKey: ["movieCredits", movieId],  
+    queryKey: ["movieCredits", movieId],
     queryFn: () => getCastAndCrew(movieId),
     enabled: !!movieId,
     staleTime: 5 * 60 * 1000,
   })
 
-  if (isLoading) return <p>Loading...</p>
-  if (error)
-    return <p>An error occurred: {error.message} console.log("error", data)</p>
+  if (isLoading) return <Loader2 />
+  if (error) {
+    console.log("error", data)
+    return <p>An error occurred: {error.message}</p>
+  }
 
   const seenIds = new Set()
 
@@ -25,7 +28,7 @@ export function MovieDetails() {
         <p className="text-2xl font-bold mb-8">Cast</p>
         <div className="flex mx-auto w-full h-auto gap-10 rounded-lg flex-wrap">
           {data?.cast?.slice(0, 6).map((actor: Crew) => {
-            return <DisplayProfile {...actor} />
+            return <DisplayProfile {...actor} key={actor.id} />
           })}
         </div>
       </div>
