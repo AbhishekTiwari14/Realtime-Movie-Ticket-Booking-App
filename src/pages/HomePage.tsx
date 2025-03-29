@@ -4,7 +4,11 @@ import { useEffect } from "react"
 
 export function Homepage() {
   useEffect(() => {
-    dailyTaskUpdates()
+    const timer = setTimeout(() => {
+      dailyTaskUpdates()
+    }, 10000)
+
+    return () => clearTimeout(timer)
   }, [])
   return <MoviesList />
 }
