@@ -16,10 +16,6 @@ let movieIdsCache: string[] | null = null
 let movieIdsCacheExpiry: number | null = null
 const CACHE_DURATION = 5 * 60 * 1000 // 5 minutes
 
-// Throttling configuration
-const BATCH_SIZE = 100 // Firestore batch limit is 500
-const OPERATION_DELAY = 3000 // 1 second delay between batches
-
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 // Define interface for batch operation
@@ -130,17 +126,27 @@ async function deleteUnlistedMovies(movies: Movie[]) {
       return !movieIdsArray.includes(movieId)
     })
 
-    // Process deletions in batches
-    for (let i = 0; i < docsToDelete.length; i += BATCH_SIZE) {
+    // Smaller batch size for deletions
+    const DELETION_BATCH_SIZE = 20
+    // Longer delay between deletion batches
+    const DELETION_DELAY = 10000 // 10 seconds
+
+    // Process deletions in smaller batches with longer delays
+    for (let i = 0; i < docsToDelete.length; i += DELETION_BATCH_SIZE) {
       const batch = writeBatch(db)
-      const batchDocs = docsToDelete.slice(i, i + BATCH_SIZE)
+      const batchDocs = docsToDelete.slice(i, i + DELETION_BATCH_SIZE)
 
       batchDocs.forEach((doc) => {
         batch.delete(doc.ref)
       })
 
       await batch.commit()
-      await sleep(OPERATION_DELAY)
+      console.log(
+        `Deleted batch ${
+          Math.floor(i / DELETION_BATCH_SIZE) + 1
+        } of ${Math.ceil(docsToDelete.length / DELETION_BATCH_SIZE)}`
+      )
+      await sleep(DELETION_DELAY)
     }
 
     console.log(`Successfully deleted ${docsToDelete.length} movie schedules`)
@@ -187,42 +193,29 @@ export async function generateMovieData() {
     const seats = generateSeatsData()
     const getMoviesId = await getFirestoreMovieIds()
 
-    const batchOperations: BatchOperation[] = []
+    // Process movies in smaller chunks with significant delays
+    const MOVIES_PER_CHUNK = 4
+    const CHUNK_DELAY = 5 * 60 * 1000 // 5 minutes in milliseconds
 
-    for (const movie of movies) {
-      if (getMoviesId.includes(movie.id)) {
-        const dateInfo = weekDates[weekDates.length - 1]
-        const dateString = `${dateInfo.date}${dateInfo.month}`
+    // Process movies in smaller chunks
+    for (
+      let movieIndex = 0;
+      movieIndex < movies.length;
+      movieIndex += MOVIES_PER_CHUNK
+    ) {
+      const movieChunk = movies.slice(movieIndex, movieIndex + MOVIES_PER_CHUNK)
+      console.log(
+        `Processing movie chunk ${
+          Math.floor(movieIndex / MOVIES_PER_CHUNK) + 1
+        } of ${Math.ceil(movies.length / MOVIES_PER_CHUNK)}`
+      )
 
-        for (const theater of theaters) {
-          for (const showTime of theater.showTimes) {
-            const docId = `${movie.id}_${dateString}_${
-              theater.id
-            }_${showTime.replace(":", "")}`
+      const batchOperations: BatchOperation[] = []
 
-            batchOperations.push({
-              docId,
-              data: {
-                movieId: movie.id,
-                movieTitle: movie.title,
-                posterPath: movie.poster_path,
-                date: dateInfo.date,
-                month: dateInfo.month,
-                day: dateInfo.day,
-                theaterId: theater.id,
-                theaterName: theater.name,
-                showTime: showTime,
-                seats: seats,
-                totalSeats: seats?.length,
-                availableSeats: seats?.length,
-                createdAt: new Date().toISOString(),
-                lastUpdated: new Date().toISOString(),
-              },
-            })
-          }
-        }
-      } else {
-        for (const dateInfo of weekDates) {
+      // Process each movie in the current chunk
+      for (const movie of movieChunk) {
+        if (getMoviesId.includes(movie.id)) {
+          const dateInfo = weekDates[weekDates.length - 1]
           const dateString = `${dateInfo.date}${dateInfo.month}`
 
           for (const theater of theaters) {
@@ -252,17 +245,65 @@ export async function generateMovieData() {
               })
             }
           }
+        } else {
+          for (const dateInfo of weekDates) {
+            const dateString = `${dateInfo.date}${dateInfo.month}`
+
+            for (const theater of theaters) {
+              for (const showTime of theater.showTimes) {
+                const docId = `${movie.id}_${dateString}_${
+                  theater.id
+                }_${showTime.replace(":", "")}`
+
+                batchOperations.push({
+                  docId,
+                  data: {
+                    movieId: movie.id,
+                    movieTitle: movie.title,
+                    posterPath: movie.poster_path,
+                    date: dateInfo.date,
+                    month: dateInfo.month,
+                    day: dateInfo.day,
+                    theaterId: theater.id,
+                    theaterName: theater.name,
+                    showTime: showTime,
+                    seats: seats,
+                    totalSeats: seats?.length,
+                    availableSeats: seats?.length,
+                    createdAt: new Date().toISOString(),
+                    lastUpdated: new Date().toISOString(),
+                  },
+                })
+              }
+            }
+          }
         }
       }
 
-      // Process in batches of 500
-      for (let i = 0; i < batchOperations.length; i += BATCH_SIZE) {
-        const batch = batchOperations.slice(i, i + BATCH_SIZE)
+      // Process batch operations with increased delays
+      const INCREASED_BATCH_SIZE = 20 // Smaller batch size
+      const INCREASED_OPERATION_DELAY = 10000 // 10 seconds delay between batches
+
+      // Process in smaller batches with longer delays
+      for (let i = 0; i < batchOperations.length; i += INCREASED_BATCH_SIZE) {
+        const batch = batchOperations.slice(i, i + INCREASED_BATCH_SIZE)
         await processMovieScheduleBatch(batch)
-        await sleep(OPERATION_DELAY) // Delay between batches
+        console.log(
+          `Completed batch ${
+            Math.floor(i / INCREASED_BATCH_SIZE) + 1
+          } of ${Math.ceil(batchOperations.length / INCREASED_BATCH_SIZE)}`
+        )
+        await sleep(INCREASED_OPERATION_DELAY) // Longer delay between batches
+      }
+
+      // Add a 5-minute delay after processing each chunk of movies (except the last chunk)
+      if (movieIndex + MOVIES_PER_CHUNK < movies.length) {
+        console.log(`Pausing for 5 minutes to avoid quota limits...`)
+        await sleep(CHUNK_DELAY)
       }
     }
 
+    // Only delete movies after all processing is complete
     await deleteUnlistedMovies(movies)
     console.log("Successfully saved all movie schedules")
   } catch (error) {
@@ -270,7 +311,6 @@ export async function generateMovieData() {
     throw error
   }
 }
-
 // Debounce mechanism
 let updateTimeout: NodeJS.Timeout | null = null
 const DEBOUNCE_DELAY = 5000 // 5 seconds
