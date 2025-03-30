@@ -127,7 +127,7 @@ async function deleteUnlistedMovies(movies: Movie[]) {
     })
 
     // Smaller batch size for deletions
-    const DELETION_BATCH_SIZE = 20
+    const DELETION_BATCH_SIZE = 4
     // Longer delay between deletion batches
     const DELETION_DELAY = 10000 // 10 seconds
 
@@ -194,7 +194,7 @@ export async function generateMovieData() {
     const getMoviesId = await getFirestoreMovieIds()
 
     // Process movies in smaller chunks with significant delays
-    const MOVIES_PER_CHUNK = 4
+    const MOVIES_PER_CHUNK = 2
     const CHUNK_DELAY = 5 * 60 * 1000 // 5 minutes in milliseconds
 
     // Process movies in smaller chunks
@@ -281,7 +281,7 @@ export async function generateMovieData() {
       }
 
       // Process batch operations with increased delays
-      const INCREASED_BATCH_SIZE = 20 // Smaller batch size
+      const INCREASED_BATCH_SIZE = 5 // Smaller batch size
       const INCREASED_OPERATION_DELAY = 10000 // 10 seconds delay between batches
 
       // Process in smaller batches with longer delays
