@@ -28,8 +28,16 @@ const firebaseConfig: FirebaseConfig = {
 
 const firebaseApp = getApps().length ? getApp() : initializeApp(firebaseConfig)
 
+// Initialize Firebase services
 export const auth = getAuth(firebaseApp)
 export const db = getFirestore(firebaseApp)
 export const googleProvider = new GoogleAuthProvider()
 
+// Set persistence
 setPersistence(auth, browserLocalPersistence)
+
+// Configure GoogleAuthProvider with additional parameters
+googleProvider.setCustomParameters({
+  prompt: "select_account",
+  access_type: "offline",
+})

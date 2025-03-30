@@ -12,7 +12,7 @@ export default function MoviePoster() {
     queryKey: ["movieDetails", movieId],
     queryFn: () => getMovie(movieId),
     enabled: !!movieId,
-    staleTime: 5 * 60 * 1000,
+    staleTime: 60 * 60 * 1000,
   })
 
   if (isLoading)

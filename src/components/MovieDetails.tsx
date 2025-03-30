@@ -11,7 +11,7 @@ export default function MovieDetails() {
     queryKey: ["movieCredits", movieId],
     queryFn: () => getCastAndCrew(movieId),
     enabled: !!movieId,
-    staleTime: 5 * 60 * 1000,
+    staleTime: 60 * 60 * 1000,
   })
 
   if (isLoading) return <Loader2 />

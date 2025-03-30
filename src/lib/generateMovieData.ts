@@ -195,7 +195,7 @@ export async function generateMovieData() {
 
     // Process movies in smaller chunks with significant delays
     const MOVIES_PER_CHUNK = 2
-    const CHUNK_DELAY = 5 * 60 * 1000 // 5 minutes in milliseconds
+    const CHUNK_DELAY = 2 * 60 * 1000 // 2 minutes in milliseconds
 
     // Process movies in smaller chunks
     for (
@@ -298,7 +298,7 @@ export async function generateMovieData() {
 
       // Add a 5-minute delay after processing each chunk of movies (except the last chunk)
       if (movieIndex + MOVIES_PER_CHUNK < movies.length) {
-        console.log(`Pausing for 5 minutes to avoid quota limits...`)
+        console.log(`Pausing for 2 minutes to avoid quota limits...`)
         await sleep(CHUNK_DELAY)
       }
     }
