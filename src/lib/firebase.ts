@@ -1,9 +1,7 @@
 import { initializeApp, getApps, getApp } from "firebase/app"
 import {
-  browserLocalPersistence,
   getAuth,
   GoogleAuthProvider,
-  setPersistence,
 } from "firebase/auth"
 import { getFirestore } from "firebase/firestore"
 
@@ -33,8 +31,6 @@ export const auth = getAuth(firebaseApp)
 export const db = getFirestore(firebaseApp)
 export const googleProvider = new GoogleAuthProvider()
 
-// Set persistence
-setPersistence(auth, browserLocalPersistence)
 
 // Configure GoogleAuthProvider with additional parameters
 googleProvider.setCustomParameters({
