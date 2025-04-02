@@ -189,7 +189,7 @@ export async function generateMovieData() {
     const movies = moviesData.results
     const theaters = generateTheatersData()
     const week = getWeekDetails()
-    const weekDates = week.slice(0, 2)
+    const weekDates = week.slice(0, 3)
     const seats = generateSeatsData()
     const getMoviesId = await getFirestoreMovieIds()
 
