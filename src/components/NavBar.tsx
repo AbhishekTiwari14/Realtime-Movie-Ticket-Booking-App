@@ -1,4 +1,3 @@
-import { useAuth } from "@/contexts/AuthContext"
 import CitySearch from "./CitySearch"
 import { Button } from "./ui/button"
 import { LogOut, ChevronDown, List, Loader2 } from "lucide-react"
@@ -11,10 +10,19 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Link } from "react-router-dom"
-import React, { Suspense } from "react"
+import React, { Suspense, useEffect, useState } from "react"
+import { useAuth } from "@/hooks/useAuth"
 
-export default function NavBar() {
-  const { currentUser, userPhotoUrl, loginWithGoogle, logout } = useAuth()
+function NavBar() {
+  const { currentUser, userPhotoUrl, loginWithGoogle, logout, loading } =
+    useAuth()
+
+  const [userImageUrl, setUserImageUrl] = useState(userPhotoUrl)
+
+  useEffect(() => {
+    setUserImageUrl(userPhotoUrl)
+    console.log("img: ", userPhotoUrl)
+  }, [userPhotoUrl])
 
   const MovieSearch = React.lazy(() => import("./MovieSearch"))
 
@@ -23,16 +31,25 @@ export default function NavBar() {
       <header>
         <div className="my-2 px-8 flex justify-between items-center w-full h-auto">
           <Link to="/">
-            <img src="/logo.png" alt="logo" className="h-10 md:h-14" />
+            <img
+              src="/logo.png"
+              alt="logo"
+              height={56}
+              width={56}
+              className="h-10 md:h-14"
+            />
           </Link>
           <Suspense fallback={<Loader2 />}>
             <MovieSearch />
           </Suspense>
           <CitySearch />
-          {userPhotoUrl ? (
+
+          {loading ? (
+            <Loader2 className="animate-spin h-5 w-5" />
+          ) : userImageUrl ? (
             <div className="flex items-center">
               <img
-                src={userPhotoUrl}
+                src={userImageUrl}
                 alt={`${currentUser?.displayName}'s profile`}
                 className="h-9 w-9 rounded-full"
                 loading="lazy"
@@ -79,3 +96,5 @@ export default function NavBar() {
     </>
   )
 }
+
+export default React.memo(NavBar)

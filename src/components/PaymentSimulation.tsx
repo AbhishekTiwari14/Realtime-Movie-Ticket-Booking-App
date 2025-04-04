@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react"
-import { useAuth } from "@/contexts/AuthContext"
 import {
   doc,
   updateDoc,
@@ -35,6 +34,7 @@ import { useLocation, useNavigate } from "react-router-dom"
 import { bookSeats } from "@/lib/bookSeats"
 import PaymentTimer from "./PaymentTimer"
 import toast from "react-hot-toast"
+import { useAuth } from "@/hooks/useAuth"
 
 type PaymentMethod = "upi" | "card" | "netbanking"
 

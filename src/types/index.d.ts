@@ -20,6 +20,7 @@ export type AuthContextType = {
   userPhotoUrl: string | null
   loginWithGoogle: () => Promise<void>
   logout: () => Promise<void>
+  loading: boolean
 }
 
 export type SeatStatus = "available" | "selected" | "booked"

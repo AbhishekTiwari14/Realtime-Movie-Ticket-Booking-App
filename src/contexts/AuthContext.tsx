@@ -1,10 +1,10 @@
-/* eslint-disable react-refresh/only-export-components */
 import {
   createContext,
-  useContext,
   useEffect,
   useState,
   ReactNode,
+  useCallback,
+  useMemo,
 } from "react"
 import {
   onAuthStateChanged,
@@ -14,12 +14,10 @@ import {
 } from "firebase/auth"
 import { auth, googleProvider } from "../lib/firebase"
 import { AuthContextType } from "@/types"
-import { Loader2 } from "lucide-react"
 
-// Create the AuthContext with a default value of null
-const AuthContext = createContext<AuthContextType | null>(null)
+// eslint-disable-next-line react-refresh/only-export-components
+export const AuthContext = createContext<AuthContextType | null>(null)
 
-// AuthProvider component to provide auth state to its children
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [currentUser, setCurrentUser] = useState<User | null>(null)
   const [userPhotoUrl, setUserPhotoUrl] = useState<string | null>(null)
@@ -28,50 +26,42 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setCurrentUser(user)
-
-      if (user && user.photoURL) {
-        setUserPhotoUrl(user.photoURL)
-      } else {
-        setUserPhotoUrl(null)
-      }
+      setUserPhotoUrl(user?.photoURL || null)
       setLoading(false)
     })
     return unsubscribe
   }, [])
 
-  const loginWithGoogle = async () => {
+  useEffect(() => {
+    console.log("img: ", userPhotoUrl)
+  }, [userPhotoUrl])
+
+  const loginWithGoogle = useCallback(async () => {
     try {
       await signInWithPopup(auth, googleProvider)
     } catch (error) {
       console.error("Google Sign-In Error:", error)
     }
-  }
+  }, [])
 
-  const logout = async () => {
+  const logout = useCallback(async () => {
     try {
       await signOut(auth)
     } catch (error) {
       console.error("Logout Error:", error)
     }
-  }
-  const value = {
-    currentUser,
-    userPhotoUrl,
-    loginWithGoogle,
-    logout,
-  }
+  }, [])
 
-  return (
-    <AuthContext.Provider value={value}>
-      {loading ? <Loader2 /> : children}
-    </AuthContext.Provider>
+  const value = useMemo(
+    () => ({
+      currentUser,
+      userPhotoUrl,
+      loginWithGoogle,
+      logout,
+      loading,
+    }),
+    [currentUser, userPhotoUrl, loginWithGoogle, logout, loading]
   )
-}
 
-export const useAuth = () => {
-  const context = useContext(AuthContext)
-  if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider")
-  }
-  return context
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }

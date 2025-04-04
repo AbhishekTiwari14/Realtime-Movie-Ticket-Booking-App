@@ -1,4 +1,4 @@
-import { useAuth } from "@/contexts/AuthContext"
+import { useAuth } from "@/hooks/useAuth"
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { currentUser, loginWithGoogle } = useAuth()

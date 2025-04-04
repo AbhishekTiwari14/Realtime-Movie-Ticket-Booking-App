@@ -1,7 +1,6 @@
 import { getMovies } from "@/apis/getMovies"
 import { Movie } from "@/types"
 import { useQuery } from "@tanstack/react-query"
-import { Loader2 } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 
@@ -29,7 +28,7 @@ export default function MovieSearch() {
           )
         )
         setShowRecommendations(true)
-        setFocusedIndex(-1) 
+        setFocusedIndex(-1)
       } else {
         setFilteredMovies([])
         setShowRecommendations(false)
@@ -71,19 +70,13 @@ export default function MovieSearch() {
       setFocusedIndex((prevIndex) =>
         prevIndex < filteredMovies.length - 1 ? prevIndex + 1 : prevIndex
       )
-    }
-
-    else if (e.key === "ArrowUp") {
+    } else if (e.key === "ArrowUp") {
       e.preventDefault()
       setFocusedIndex((prevIndex) => (prevIndex > 0 ? prevIndex - 1 : -1))
-    }
-
-    else if (e.key === "Escape") {
+    } else if (e.key === "Escape") {
       setShowRecommendations(false)
       inputRef.current?.focus()
-    }
-
-    else if (e.key === "Enter" && focusedIndex >= 0) {
+    } else if (e.key === "Enter" && focusedIndex >= 0) {
       e.preventDefault()
       selectMovie(filteredMovies[focusedIndex])
     }
@@ -101,7 +94,16 @@ export default function MovieSearch() {
     navigate(`/${movie.id}`)
   }
 
-  if (isLoading) return <Loader2 />
+  if (isLoading)
+    return (
+      <div className="relative w-3/5 lg:w-2/5">
+        <input
+          type="search"
+          placeholder="Search for Movies"
+          className="w-full border-gray-100 border-2 pl-12 pr-6 py-2 rounded-3xl"
+        />
+      </div>
+    )
 
   if (error) {
     return (
