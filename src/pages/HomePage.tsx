@@ -6,7 +6,6 @@ export function Homepage() {
   const hasRunUpdate = useRef(false)
 
   useEffect(() => {
-    // Only run dailyTaskUpdates once per session
     if (!hasRunUpdate.current) {
       const timer = setTimeout(() => {
         dailyTaskUpdates()
