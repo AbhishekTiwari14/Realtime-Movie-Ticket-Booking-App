@@ -31,13 +31,7 @@ function NavBar() {
       <header>
         <div className="my-2 px-8 flex justify-between items-center w-full h-auto">
           <Link to="/">
-            <img
-              src="/logo.png"
-              alt="logo"
-              height={56}
-              width={56}
-              className="h-10 md:h-14"
-            />
+            <img src="/logo.png" alt="logo" className="h-10 md:h-14" />
           </Link>
           <Suspense fallback={<Loader2 />}>
             <MovieSearch />
