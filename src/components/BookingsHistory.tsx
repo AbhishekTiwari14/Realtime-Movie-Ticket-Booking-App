@@ -81,8 +81,10 @@ export default function BookingsHistory() {
 
   const getSortedBookings = () => {
     return [...bookings].sort((a, b) => {
-      if (a[sortField] < b[sortField]) return sortDirection === "asc" ? -1 : 1
-      if (a[sortField] > b[sortField]) return sortDirection === "asc" ? 1 : -1
+      const aVal = sortField === "date" ? new Date(a.date) : a[sortField];
+      const bVal = sortField === "date" ? new Date(b.date) : b[sortField];
+      if (aVal < bVal) return sortDirection === "asc" ? -1 : 1
+      if (aVal > bVal) return sortDirection === "asc" ? 1 : -1
       return 0
     })
   }

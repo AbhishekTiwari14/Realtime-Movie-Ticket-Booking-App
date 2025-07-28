@@ -27,7 +27,6 @@ export function startSeatReleaseTimeout(docId: string, selectedSeats: string[]) 
   
           if (seatsToRelease.length > 0) {
             const seatsToReleaseIds = seatsToRelease.map((seat: Seat) => seat.id)
-            console.log("Releasing seats:", seatsToReleaseIds)
             await bookSeats(docId, seatsToReleaseIds, "available")
           }
         }

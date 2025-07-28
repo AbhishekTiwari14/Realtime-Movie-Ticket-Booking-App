@@ -32,10 +32,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return unsubscribe
   }, [])
 
-  useEffect(() => {
-    console.log("img: ", userPhotoUrl)
-  }, [userPhotoUrl])
-
   const loginWithGoogle = useCallback(async () => {
     try {
       await signInWithPopup(auth, googleProvider)

@@ -21,7 +21,6 @@ function NavBar() {
 
   useEffect(() => {
     setUserImageUrl(userPhotoUrl)
-    console.log("img: ", userPhotoUrl)
   }, [userPhotoUrl])
 
   const MovieSearch = React.lazy(() => import("./MovieSearch"))
@@ -56,15 +55,17 @@ function NavBar() {
                   />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-56" align="end">
-                  <DropdownMenuItem>
-                    <Link
-                      to={`${currentUser.uid}/booking-history`}
-                      className="flex items-center w-full"
-                    >
-                      <List size={20} className="mr-2" />
-                      <span>Booking History</span>
-                    </Link>
-                  </DropdownMenuItem>
+                  {currentUser?.uid && (
+                    <DropdownMenuItem>
+                      <Link
+                        to={`/${currentUser.uid}/booking-history`}
+                        className="flex items-center w-full"
+                      >
+                        <List size={20} className="mr-2" />
+                        <span>Booking History</span>
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
                     onClick={logout}
